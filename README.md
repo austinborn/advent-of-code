@@ -1,15 +1,24 @@
 # Advent of Code Typescript Solutions
 
-## Setup (MacOS only)
+## One-Time Setup (MacOS only)
 1. Install NPM and Typescript:
 ```
 brew install npm typescript
 ```
+
 2. Install Node Types:
 ```
 npm install @types/node --save-dev
 ```
-3. Run file:
+
+## Daily Setup
+
+1. Create code for year and day:
 ```
-npx ts-node 2023/day1/code.ts
+./scripts/addDay.sh 2024 13
+```
+
+2. Run code:
+```
+./scripts/runDay.sh 2024 13
 ```

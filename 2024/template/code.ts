@@ -4,8 +4,10 @@ import { readFileSync } from 'fs'
 import { getSum, getMaxes } from '../../utils'
 
 const main = async () => {
+  const [ , , year, day] = process.argv
+  const input = readFileSync(`./${year}/day${day}/input.txt`, 'utf8')
+
   console.log("Solving Puzzle:")
-  const input = readFileSync('./2024/day2/input.txt', 'utf8')
 
   let answer1
 

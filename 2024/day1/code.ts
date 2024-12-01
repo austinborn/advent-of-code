@@ -2,6 +2,7 @@
 import { createHash } from 'crypto'
 import { readFileSync } from 'fs'
 import { getSum, getMaxes } from '../../utils'
+import { argv } from 'process'
 
 const getLastDig = (word: string) => {
   let char
@@ -109,8 +110,10 @@ const getFirstDig = (word: string) => {
 }
 
 const main = async () => {
+  const [,,year, day] = process.argv
+  const input = readFileSync(`./${year}/day${day}/input.txt`, 'utf8')
+
   console.log("Solving Puzzle:")
-  const input = readFileSync('./2024/day1/input.txt', 'utf8')
 
   const lines = input.split('\n')
 
