@@ -1,5 +1,11 @@
 {
   "devDependencies": {
+    "@types/bignumber.js": "^5.0.0",
     "@types/node": "^20.10.1"
+  },
+  "dependencies": {
+    "bignumber": "^1.1.0",
+    "bignumber.js": "^9.1.2",
+    "decimal.js": "^10.4.3"
   }
 }
