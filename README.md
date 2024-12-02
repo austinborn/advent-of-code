@@ -11,6 +11,8 @@ brew install npm typescript
 npm install @types/node --save-dev
 ```
 
+3. Set executable permissions on scripts in `scripts/` directory.
+
 ## Daily Setup
 
 1. Create code for year and day:
