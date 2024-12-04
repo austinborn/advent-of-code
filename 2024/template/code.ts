@@ -8,17 +8,17 @@ const main = async () => {
 
   console.log("Solving Puzzle:")
 
-  let answer1
+  let answer
 
 
 
-  console.log('\nPart 1: ' + answer1)
+  console.log('\nPart 1: ' + answer)
 
-  let answer2
+  answer = undefined
 
   
 
-  console.log('\nPart 2: ' + answer2)
+  console.log('\nPart 2: ' + answer)
 
 }
 
