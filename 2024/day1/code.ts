@@ -41,7 +41,6 @@ const main = async () => {
   let similarityScore = 0
   for (let i = 0; i < sortedarr1.length; i++) {
     const num = sortedarr1[i]
-    console.log(num+'\n')
     similarityScore += parseInt(num) * (freq[num] || 0)
   }
 
