@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 
-const solvePart1 = (header: string, input) => {
+const solvePart1 = (header: string, input: string) => {
   let answer = 0
 
   // TODO
@@ -8,7 +8,7 @@ const solvePart1 = (header: string, input) => {
   console.log(header, answer)
 }
 
-const solvePart2 = (header: string, input) => {
+const solvePart2 = (header: string, input: string) => {
   let answer = 0
 
   // TODO
