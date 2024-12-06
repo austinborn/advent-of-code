@@ -127,7 +127,7 @@ const solvePart2 = (header: string, input: string) => {
         x += 1
         allObsPositions.add(x+','+y)
       }
-    } else if (guardDir == 'right') {
+    } else { // guardDir == 'right'
       if (y == map.length - 1) break
       nextchar = map[x][y+1]
       if (nextchar == '#') {
@@ -136,9 +136,6 @@ const solvePart2 = (header: string, input: string) => {
         y += 1
         allObsPositions.add(x+','+y)
       }
-    } else {
-      console.log("NO OP")
-      break
     }
   }
 
@@ -193,7 +190,7 @@ const solvePart2 = (header: string, input: string) => {
         } else {
           x += 1
         }
-      } else if (guardDir == 'right') {
+      } else { // guardDir == 'right'
         if (y == map.length - 1) break
         if (traversedDir[x][y].has('right')) {
           answer += 1
@@ -205,9 +202,6 @@ const solvePart2 = (header: string, input: string) => {
         } else {
           y += 1
         }
-      } else {
-        console.log("NO OP")
-        break
       }
     }
   }
