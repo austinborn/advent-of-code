@@ -19,7 +19,7 @@ const numsHasTest2 = (nums: number[], test: number) => {
   )
 }
 
-const solvePart1 = (header: string, rows: string[]) => {
+const solvePart1 = (rows: string[]) => {
   let answer = 0
 
   for (let row of rows) {
@@ -28,10 +28,10 @@ const solvePart1 = (header: string, rows: string[]) => {
     if (numsHasTest(nums, parseInt(test))) answer += parseInt(test)
   }
 
-  console.log(header, answer)
+  return answer
 }
 
-const solvePart2 = (header: string, rows: string[]) => {
+const solvePart2 = (rows: string[]) => {
   let answer = 0
 
   for (let row of rows) {
@@ -40,18 +40,18 @@ const solvePart2 = (header: string, rows: string[]) => {
     if (numsHasTest2(nums, parseInt(test))) answer += parseInt(test)
   }
 
-  console.log(header, answer)
+  return answer
 }
 
 const main = async () => {
   const input = (await fetchInput()).split('\n')
   const inputExample = (await fetchExample()).split('\n')
 
-  solvePart1('\nPart 1 (example): ', inputExample)
-  solvePart1('\nPart 1: ', input)
+  console.log('\nPart 1 (example):', solvePart1(inputExample))
+  console.log('\nPart 1:', solvePart1(input))
 
-  solvePart2('\nPart 2 (example): ', inputExample)
-  solvePart2('\nPart 2: ', input)
+  console.log('\nPart 2 (example):', solvePart2(inputExample))
+  console.log('\nPart 2:', solvePart2(input))
 }
 
 main()

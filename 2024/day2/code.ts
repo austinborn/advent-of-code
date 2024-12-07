@@ -19,16 +19,16 @@ const unsafeIdx = (levels: number[]) => {
   return null
 }
 
-const solvePart1 = (header: string, rows: string[]) => {
+const solvePart1 = (rows: string[]) => {
   let answer = rows.reduce((count, report) => {
     const levels = report.split(' ').map(i => parseInt(i))
     return isReportSafe(levels) ? count + 1 : count
   }, 0)
 
-  console.log(header, answer)
+  return answer
 }
 
-const solvePart2 = (header: string, rows: string[]) => {
+const solvePart2 = (rows: string[]) => {
   let answer = rows.reduce((count, report) => {
     const levels = report.split(' ').map(i => parseInt(i))
     let unsafeIdxVar = unsafeIdx(levels)
@@ -52,18 +52,18 @@ const solvePart2 = (header: string, rows: string[]) => {
   }, 0)
 
 
-  console.log(header, answer)
+  return answer
 }
 
 const main = async () => {
   const input = (await fetchInput()).split('\n')
   const inputExample = (await fetchExample()).split('\n')
 
-  solvePart1('\nPart 1 (example): ', inputExample)
-  solvePart1('\nPart 1: ', input)
+  console.log('\nPart 1 (example):', solvePart1(inputExample))
+  console.log('\nPart 1:', solvePart1(input))
 
-  solvePart2('\nPart 2 (example): ', inputExample)
-  solvePart2('\nPart 2: ', input)
+  console.log('\nPart 2 (example):', solvePart2(inputExample))
+  console.log('\nPart 2:', solvePart2(input))
 }
 
 main()
