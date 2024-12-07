@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { fetchExample, fetchInput } from '../../utils'
 
 class GraphNode {
   page
@@ -173,7 +173,7 @@ const solvePart1 = (header: string, input: string) => {
   console.log(header, answer)
 }
 
-const solvePart2 = (header: string, input) => {
+const solvePart2 = (header: string, input: string) => {
   const [rules, updates] = input.split('\n\n').map(r => r.split('\n'))
 
   const rulesPerPage = {}
@@ -283,10 +283,8 @@ const solvePart2 = (header: string, input) => {
 }
 
 const main = async () => {
-  const input = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/input.txt`, 'utf8')
-  const inputExample = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/inputExample.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
+  const input = await fetchInput()
+  const inputExample = await fetchExample()
 
   solvePart1('\nPart 1 (example): ', inputExample)
   solvePart1('\nPart 1: ', input)

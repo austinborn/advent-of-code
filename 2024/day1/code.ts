@@ -1,22 +1,13 @@
+import { fetchExample, fetchInput } from '../../utils'
 
-import { createHash } from 'crypto'
-import { readFileSync } from 'fs'
-import { getSum, getMaxes } from '../../utils'
-import { argv } from 'process'
-
-const main = async () => {
-  const [,,year, day] = process.argv
-  const input = readFileSync(`./${year}/day${day}/input.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
-
-  const lines = input.split('\n')
+const solvePart1 = (header: string, rows: string[]) => {
+  let answer = 0
 
   const arr1 = []
   const arr2 = []
 
-  for (let line of lines) {
-    const nums = line.split('   ')
+  for (let row of rows) {
+    const nums = row.split('   ')
     arr1.push(nums[0])
     arr2.push(nums[1])
   }
@@ -24,12 +15,27 @@ const main = async () => {
   const sortedarr1 = arr1.sort()
   const sortedarr2 = arr2.sort()
 
-  let sumDiff = 0
   for (let i = 0; i < sortedarr1.length; i++) {
-    sumDiff += Math.abs(sortedarr1[i] - sortedarr2[i])
+    answer += Math.abs(sortedarr1[i] - sortedarr2[i])
   }
 
-  console.log('\nPart 1: ' + sumDiff)
+  console.log(header, answer)
+}
+
+const solvePart2 = (header: string, rows: string[]) => {
+  let answer = 0
+
+  const arr1 = []
+  const arr2 = []
+
+  for (let row of rows) {
+    const nums = row.split('   ')
+    arr1.push(nums[0])
+    arr2.push(nums[1])
+  }
+
+  const sortedarr1 = arr1.sort()
+  const sortedarr2 = arr2.sort()
 
   const freq = {}
 
@@ -38,14 +44,23 @@ const main = async () => {
     freq[num] = (freq[num] ?? 0) + 1
   }
 
-  let similarityScore = 0
   for (let i = 0; i < sortedarr1.length; i++) {
     const num = sortedarr1[i]
-    similarityScore += parseInt(num) * (freq[num] || 0)
+    answer += parseInt(num) * (freq[num] || 0)
   }
 
-  console.log('\nPart 2: ' + similarityScore)
+  console.log(header, answer)
+}
 
+const main = async () => {
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
+
+  solvePart1('\nPart 1 (example): ', inputExample)
+  solvePart1('\nPart 1: ', input)
+
+  solvePart2('\nPart 2 (example): ', inputExample)
+  solvePart2('\nPart 2: ', input)
 }
 
 main()

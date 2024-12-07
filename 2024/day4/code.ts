@@ -1,7 +1,4 @@
-
-import { createHash } from 'crypto'
-import { readFileSync } from 'fs'
-import { getSum, getMaxes } from '../../utils'
+import { fetchExample, fetchInput } from '../../utils'
 
 const check0 = (matrix: string[][], i: number, j: number) => (
   matrix[i][j] == 'X' &&
@@ -59,13 +56,9 @@ const check315 = (matrix: string[][], i: number, j: number) => (
   matrix[i + 3][j + 3] == 'S'
 ) && 1
 
-const main = async () => {
-  const input = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/input.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
-
+const solvePart1 = (header: string, rows: string[]) => {
   let answer = 0
-  let letterMatrix = input.split('\n').map(row => row.split(''))
+  let letterMatrix = rows.map(row => row.split(''))
 
   for (let i = 0; i < letterMatrix.length; i++) {
     for (let j = 0; j < letterMatrix[0].length; j++) {
@@ -172,9 +165,12 @@ const main = async () => {
     }
   }
 
-  console.log('\nPart 1: ' + answer)
+  console.log(header, answer)
+}
 
-  answer = 0
+const solvePart2 = (header: string, rows: string[]) => {
+  let answer = 0
+  let letterMatrix = rows.map(row => row.split(''))
 
   for (let i = 1; i < letterMatrix.length - 1; i++) {
     for (let j = 1; j < letterMatrix[0].length - 1; j++) {
@@ -194,8 +190,19 @@ const main = async () => {
     }
   }
 
-  console.log('\nPart 2: ' + answer)
+  console.log(header, answer)
 
+}
+
+const main = async () => {
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
+
+  solvePart1('\nPart 1 (example): ', inputExample)
+  solvePart1('\nPart 1: ', input)
+
+  solvePart2('\nPart 2 (example): ', inputExample)
+  solvePart2('\nPart 2: ', input)
 }
 
 main()

@@ -1,7 +1,4 @@
-
-import { createHash } from 'crypto'
-import { readFileSync } from 'fs'
-import { getSum, getMaxes } from '../../utils'
+import { fetchExample, fetchInput } from '../../utils'
 
 const isReportSafe = (levels: number[]) => (unsafeIdx(levels) == null)
 
@@ -22,22 +19,17 @@ const unsafeIdx = (levels: number[]) => {
   return null
 }
 
-const main = async () => {
-  const [ , , year, day] = process.argv
-  const input = readFileSync(`./${year}/day${day}/input.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
-
-  const reports = input.split("\n")
-
-  let answer1 = reports.reduce((count, report) => {
+const solvePart1 = (header: string, rows: string[]) => {
+  let answer = rows.reduce((count, report) => {
     const levels = report.split(' ').map(i => parseInt(i))
     return isReportSafe(levels) ? count + 1 : count
   }, 0)
 
-  console.log('\nPart 1: ' + answer1)
+  console.log(header, answer)
+}
 
-  let answer2 = reports.reduce((count, report) => {
+const solvePart2 = (header: string, rows: string[]) => {
+  let answer = rows.reduce((count, report) => {
     const levels = report.split(' ').map(i => parseInt(i))
     let unsafeIdxVar = unsafeIdx(levels)
 
@@ -59,8 +51,19 @@ const main = async () => {
     } else return count + 1
   }, 0)
 
-  console.log('\nPart 2: ' + answer2)
 
+  console.log(header, answer)
+}
+
+const main = async () => {
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
+
+  solvePart1('\nPart 1 (example): ', inputExample)
+  solvePart1('\nPart 1: ', input)
+
+  solvePart2('\nPart 2 (example): ', inputExample)
+  solvePart2('\nPart 2: ', input)
 }
 
 main()

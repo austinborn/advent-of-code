@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { fetchExample, fetchInput } from '../../utils'
 
 const numsHasTest = (nums: number[], test: number) => {
   if(nums.length == 1) return nums[0] == test
@@ -19,10 +19,9 @@ const numsHasTest2 = (nums: number[], test: number) => {
   )
 }
 
-const solvePart1 = (header: string, input: string) => {
+const solvePart1 = (header: string, rows: string[]) => {
   let answer = 0
 
-  const rows = input.split('\n')
   for (let row of rows) {
     const [test, numSet] = row.split(': ')
     const nums = numSet.split(' ').map(n => parseInt(n))
@@ -32,10 +31,9 @@ const solvePart1 = (header: string, input: string) => {
   console.log(header, answer)
 }
 
-const solvePart2 = (header: string, input: string) => {
+const solvePart2 = (header: string, rows: string[]) => {
   let answer = 0
 
-  const rows = input.split('\n')
   for (let row of rows) {
     const [test, numSet] = row.split(': ')
     const nums = numSet.split(' ').map(n => parseInt(n))
@@ -46,10 +44,8 @@ const solvePart2 = (header: string, input: string) => {
 }
 
 const main = async () => {
-  const input = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/input.txt`, 'utf8')
-  const inputExample = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/inputExample.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
 
   solvePart1('\nPart 1 (example): ', inputExample)
   solvePart1('\nPart 1: ', input)

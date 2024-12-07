@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { fetchExample, fetchInput } from '../../utils'
 
 const getGuardXY = (map: string[][]) => {
   let x = 0, y = 0, found = false
@@ -20,16 +20,16 @@ const getGuardXY = (map: string[][]) => {
 }
 
 
-const solvePart1 = (header: string, input: string) => {
+const solvePart1 = (header: string, rows: string[]) => {
 
-  const map = input.split('\n').map(r => r.split(''))
+  const map = rows.map(r => r.split(''))
 
   let {x, y} = getGuardXY(map)
 
   let guardDir = 'up'
   let nextchar
   let answer = 1
-  let traversed = input.split('\n').map(r => r.split('').map(_ => false))
+  let traversed = rows.map(r => r.split('').map(_ => false))
   traversed[x][y] = true
 
   while(true) {
@@ -90,8 +90,8 @@ const solvePart1 = (header: string, input: string) => {
   console.log(header, answer)
 }
 
-const solvePart2 = (header: string, input: string) => {
-  const map = input.split('\n').map(r => r.split(''))
+const solvePart2 = (header: string, rows: string[]) => {
+  const map = rows.map(r => r.split(''))
 
   let {x, y} = getGuardXY(map)
 
@@ -210,10 +210,8 @@ const solvePart2 = (header: string, input: string) => {
 }
 
 const main = async () => {
-  const input = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/input.txt`, 'utf8')
-  const inputExample = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/inputExample.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
 
   solvePart1('\nPart 1 (example): ', inputExample)
   solvePart1('\nPart 1: ', input)

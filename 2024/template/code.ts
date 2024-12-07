@@ -1,6 +1,6 @@
-import { readFileSync } from 'fs'
+import { fetchExample, fetchInput } from '../../utils'
 
-const solvePart1 = (header: string, input: string) => {
+const solvePart1 = (header: string, rows: string[]) => {
   let answer = 0
 
   // TODO
@@ -8,7 +8,7 @@ const solvePart1 = (header: string, input: string) => {
   console.log(header, answer)
 }
 
-const solvePart2 = (header: string, input: string) => {
+const solvePart2 = (header: string, rows: string[]) => {
   let answer = 0
 
   // TODO
@@ -17,10 +17,8 @@ const solvePart2 = (header: string, input: string) => {
 }
 
 const main = async () => {
-  const input = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/input.txt`, 'utf8')
-  const inputExample = readFileSync(`./${process.argv[2]}/day${process.argv[3]}/inputExample.txt`, 'utf8')
-
-  console.log("Solving Puzzle:")
+  const input = (await fetchInput()).split('\n')
+  const inputExample = (await fetchExample()).split('\n')
 
   solvePart1('\nPart 1 (example): ', inputExample)
   solvePart1('\nPart 1: ', input)

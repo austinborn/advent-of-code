@@ -1,3 +1,9 @@
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { get as axiosGet } from 'axios'
+import { config as dotenvConfig } from 'dotenv'
+
+dotenvConfig()
+
 export const getSum = (nums: number[]) => nums.reduce((sum, num) => sum += num, 0)
 
 // O(n^2) instead of O(n log n)
@@ -34,4 +40,33 @@ export const getFactors = (num: number) => {
     }
   }
   return factors
+}
+
+export const fetchInput = async () => fetchText("/input", "input")
+
+export const fetchExample = async (filename?: string) => fetchText("", filename ?? "inputExample", /<code>(.|\n)*?<\/code>/)
+
+export const fetchText = async (endpoint: string, fileName: string, regex?: RegExp) => {
+  let year = process.argv[2]
+  let day = process.argv[3]
+
+  if (!existsSync(`./${year}/day${day}/${fileName}.txt`)) {
+    let cookie = process.env.COOKIE
+    if (!cookie) throw new Error("Requires COOKIE in .env")
+    let { data, status }: { data: string, status: number } = await axiosGet(`https://adventofcode.com/${year}/day/${day}${endpoint}`, { headers: { Cookie: cookie } })
+
+    if (status != 200) throw new Error(`Axios request failed with status: ${status}`)
+
+    if (regex) {
+      data = data.match(regex)[0]
+      data = data.substring(6, data.length - 7)
+    }
+
+    const input = data.substring(0, data.length-1)
+
+    writeFileSync(`./${year}/day${day}/${fileName}.txt`, input)
+    return input
+  } else {
+    return readFileSync(`./${year}/day${day}/${fileName}.txt`, 'utf8')
+  }
 }
