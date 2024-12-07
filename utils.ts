@@ -51,7 +51,9 @@ export const fetchText = async (endpoint: string, fileName: string, regex?: RegE
   let year = process.argv[2]
   let day = process.argv[3]
 
-  if (!existsSync(`./${year}/day${day}/${fileName}.txt`)) {
+  const filePath = `./${year}/day${day}/${fileName}.txt`
+
+  if (!existsSync(filePath)) {
     let cookie = process.env.COOKIE
     if (!cookie) throw new Error("Requires COOKIE in .env")
     let { data, status }: { data: string, status: number } = await axiosGet(`https://adventofcode.com/${year}/day/${day}${endpoint}`, { headers: { Cookie: cookie } })
@@ -65,9 +67,9 @@ export const fetchText = async (endpoint: string, fileName: string, regex?: RegE
 
     const input = data.substring(0, data.length-1)
 
-    writeFileSync(`./${year}/day${day}/${fileName}.txt`, input)
+    writeFileSync(filePath, input)
     return input
   } else {
-    return readFileSync(`./${year}/day${day}/${fileName}.txt`, 'utf8')
+    return readFileSync(filePath, 'utf8')
   }
 }
