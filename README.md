@@ -24,3 +24,4 @@ npm install @types/node --save-dev
 ```
 ./scripts/runDay.sh 2024 13
 ```
+Note that the first time this runs for a given day, it will attempt to pull the input text files from [https://adventofcode.com/](https://adventofcode.com/). If it fails to pull the files correctly (especially `inputExample.txt`), you may need to paste this manually from the website.

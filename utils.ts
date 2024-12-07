@@ -44,6 +44,7 @@ export const getFactors = (num: number) => {
 
 export const fetchInput = async () => fetchText("/input", "input")
 
+//Note: the regex below doesn't always work, just paste the example input manually in that case
 export const fetchExample = async (filename?: string) => fetchText("", filename ?? "inputExample", /<code>(.|\n)*?<\/code>/)
 
 export const fetchText = async (endpoint: string, fileName: string, regex?: RegExp) => {
