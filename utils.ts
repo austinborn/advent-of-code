@@ -8,7 +8,7 @@ dotenvConfig()
 // Helpers //
 /////////////
 
-export const getSum = (nums: number[]) => nums.reduce((sum, num) => sum += num, 0)
+export const getSum = (nums: number[]) => nums.reduce((sum, num) => sum + num, 0)
 
 // O(n^2) instead of O(n log n)
 export const getMaxes = (nums: number[], n: number) => nums.reduce((maxes, num) => {
