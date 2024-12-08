@@ -1,24 +1,14 @@
-import { fetchExample, fetchInput, withTime } from '../../utils'
+import { fetchExample, fetchInput, getFilledMatrix, withTime } from '../../utils'
 
 const getGuardXY = (map: string[][]) => {
-  let x = 0, y = 0, found = false
-
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map[0].length; j++) {
-      let char = map[i][j]
-      if (char == '^') {
-        x = i
-        y = j
-        found = true
-        break
-      }
+      if (map[i][j] == '^') return { x: i, y: j }
     }
-    if (found) break
   }
 
-  return {x,y}
+  return { x: 0, y: 0 }
 }
-
 
 const solvePart1 = (rows: string[]) => {
 
@@ -27,16 +17,14 @@ const solvePart1 = (rows: string[]) => {
   let {x, y} = getGuardXY(map)
 
   let guardDir = 'up'
-  let nextchar
   let answer = 1
-  let traversed = rows.map(r => r.split('').map(_ => false))
+  let traversed = getFilledMatrix([rows.length, rows[0].length], () => false)
   traversed[x][y] = true
 
   while(true) {
     if (guardDir == 'up') {
       if (x == 0) break
-      nextchar = map[x-1][y]
-      if (nextchar == '#') {
+      if (map[x-1][y] == '#') {
         guardDir = 'right'
       } else {
         x -= 1
@@ -47,8 +35,7 @@ const solvePart1 = (rows: string[]) => {
       }
     } else if (guardDir == 'left') {
       if (y == 0) break
-      nextchar = map[x][y-1]
-      if (nextchar == '#') {
+      if (map[x][y-1] == '#') {
         guardDir = 'up'
       } else {
         y -= 1
@@ -59,8 +46,7 @@ const solvePart1 = (rows: string[]) => {
       }
     } else if (guardDir == 'down') {
       if (x == map.length - 1) break
-      nextchar = map[x+1][y]
-      if (nextchar == '#') {
+      if (map[x+1][y] == '#') {
         guardDir = 'left'
       } else {
         x += 1
@@ -69,10 +55,9 @@ const solvePart1 = (rows: string[]) => {
           answer += 1
         }
       }
-    } else if (guardDir == 'right') {
+    } else { // guardDir == 'right'
       if (y == map.length - 1) break
-      nextchar = map[x][y+1]
-      if (nextchar == '#') {
+      if (map[x][y+1] == '#') {
         guardDir = 'down'
       } else {
         y += 1
@@ -81,9 +66,6 @@ const solvePart1 = (rows: string[]) => {
           answer += 1
         }
       }
-    } else {
-      console.log("NO OP")
-      break
     }
   }
 
@@ -97,13 +79,11 @@ const solvePart2 = (rows: string[]) => {
 
   let allObsPositions: Set<string> = new Set()
   let guardDir = 'up'
-  let nextchar
 
   while(true) {
     if (guardDir == 'up') {
       if (x == 0) break
-      nextchar = map[x-1][y]
-      if (nextchar == '#') {
+      if (map[x-1][y] == '#') {
         guardDir = 'right'
       } else {
         x -= 1
@@ -111,8 +91,7 @@ const solvePart2 = (rows: string[]) => {
       }
     } else if (guardDir == 'left') {
       if (y == 0) break
-      nextchar = map[x][y-1]
-      if (nextchar == '#') {
+      if (map[x][y-1] == '#') {
         guardDir = 'up'
       } else {
         y -= 1
@@ -120,8 +99,7 @@ const solvePart2 = (rows: string[]) => {
       }
     } else if (guardDir == 'down') {
       if (x == map.length - 1) break
-      nextchar = map[x+1][y]
-      if (nextchar == '#') {
+      if (map[x+1][y] == '#') {
         guardDir = 'left'
       } else {
         x += 1
@@ -129,8 +107,7 @@ const solvePart2 = (rows: string[]) => {
       }
     } else { // guardDir == 'right'
       if (y == map.length - 1) break
-      nextchar = map[x][y+1]
-      if (nextchar == '#') {
+      if (map[x][y+1] == '#') {
         guardDir = 'down'
       } else {
         y += 1
@@ -141,17 +118,17 @@ const solvePart2 = (rows: string[]) => {
 
   let answer = 0
 
+  let guardXY = getGuardXY(map)
+
   for (let obsPos of allObsPositions) {
     let [obsX, obsY] = obsPos.split(',')
-    let newMap = [...map.map(row => [...row])]
-    newMap[obsX][obsY] = '#'
+    map[obsX][obsY] = '#'
 
     guardDir = 'up'
-    nextchar = ''
-  
-    let {x, y} = getGuardXY(map)
 
-    let traversedDir: Set<string>[][] = newMap.map(r => r.map(_ => new Set()))
+    let {x, y} = guardXY
+
+    let traversedDir = getFilledMatrix([map.length, map[0].length], () => new Set())
 
     while(true) {
       if (guardDir == 'up') {
@@ -160,8 +137,7 @@ const solvePart2 = (rows: string[]) => {
           answer += 1
           break
         } else traversedDir[x][y].add('up')
-        nextchar = newMap[x-1][y]
-        if (nextchar == '#') {
+        if (map[x-1][y] == '#') {
           guardDir = 'right'
         } else {
           x -= 1
@@ -172,8 +148,7 @@ const solvePart2 = (rows: string[]) => {
           answer += 1
           break
         } else traversedDir[x][y].add('left')
-        nextchar = newMap[x][y-1]
-        if (nextchar == '#') {
+        if (map[x][y-1] == '#') {
           guardDir = 'up'
         } else {
           y -= 1
@@ -184,8 +159,7 @@ const solvePart2 = (rows: string[]) => {
           answer += 1
           break
         } else traversedDir[x][y].add('down')
-        nextchar = newMap[x+1][y]
-        if (nextchar == '#') {
+        if (map[x+1][y] == '#') {
           guardDir = 'left'
         } else {
           x += 1
@@ -196,14 +170,14 @@ const solvePart2 = (rows: string[]) => {
           answer += 1
           break
         } else traversedDir[x][y].add('right')
-        nextchar = newMap[x][y+1]
-        if (nextchar == '#') {
+        if (map[x][y+1] == '#') {
           guardDir = 'down'
         } else {
           y += 1
         }
       }
     }
+    map[obsX][obsY] = '.'
   }
 
   return answer

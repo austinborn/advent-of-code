@@ -1,7 +1,7 @@
 
 import { createHash } from 'crypto'
 import { readFileSync } from 'fs'
-import { getFilledArray, getSum, getMaxes } from '../../utils'
+import { getFilledMatrix, getSum, getMaxes } from '../../utils'
 
 const main = async () => {
   console.log("Solving Puzzle:")
@@ -9,9 +9,9 @@ const main = async () => {
 
   let rows = input.split('\n')
 
-  const baseMapping = getFilledArray([rows.length,rows[0].length], false)
+  const baseMapping = getFilledMatrix([rows.length,rows[0].length], false)
 
-  const baseGearsMapping = getFilledArray([rows.length, rows[0].length], {x:null, y:null})
+  const baseGearsMapping = getFilledMatrix([rows.length, rows[0].length], {x:null, y:null})
 
   const { mapping: charTouchesSymbol, redNums: numberList, gears } = rows.reduce((reductions, r, rIdx) => {
     let numString = ""
