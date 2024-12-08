@@ -1,22 +1,28 @@
 import { fetchExample, fetchInput, withTime } from '../../utils'
 
-const solvePart1 = (rows: string[]) => {
-  let uniqueAntennas = new Set<string>()
+const getAntennaList = (rows: string[]) => {
   let antennaList: Record<string, { x: number, y: number }[]> = {}
+  let uniqueAntennas = new Set<string>()
 
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    for (let j = 0; j < row.length; j++) {
-      const char = row[j]
+  for (let y = 0; y < rows.length; y++) {
+    const row = rows[y]
+    for (let x = 0; x < row.length; x++) {
+      const char = row[x]
       if (char == '.') continue
       if (!uniqueAntennas.has(char)) {
         uniqueAntennas.add(char)
-        antennaList[char] = [{ x: j, y: i }]
+        antennaList[char] = [{ x, y }]
       } else {
-        antennaList[char].push({ x: j, y: i })
+        antennaList[char].push({ x, y })
       }
     }
   }
+
+  return { uniqueAntennas, antennaList }
+}
+
+const solvePart1 = (rows: string[]) => {
+  const { uniqueAntennas, antennaList } = getAntennaList(rows)
 
   let uniqueAntinodes = new Set()
 
@@ -24,28 +30,17 @@ const solvePart1 = (rows: string[]) => {
     let locales = antennaList[char]
     let [thisLocale, ...remainingLocales] = locales
     while(remainingLocales.length > 0) {
-      console.log(thisLocale, remainingLocales)
       for (let locale of remainingLocales) {
-        let antinodeX = 2 * thisLocale.x - locale.x
-        let antinodeY = 2 * thisLocale.y - locale.y
-        if (
-          antinodeX >= 0 &&
-          antinodeX < rows[0].length &&
-          antinodeY >= 0 &&
-          antinodeY < rows.length
-        ) {
-          if (!uniqueAntinodes.has(`${antinodeX},${antinodeY}`)) uniqueAntinodes.add(`${antinodeX},${antinodeY}`)
+        let diff = { x: locale.x - thisLocale.x, y: locale.y - thisLocale.y }
+
+        let antinode = { x: thisLocale.x - diff.x, y: thisLocale.y - diff.y }
+        if (antinode.x >= 0 && antinode.x < rows[0].length && antinode.y >= 0 && antinode.y < rows.length) {
+          uniqueAntinodes.add(`${antinode.x},${antinode.y}`)
         }
 
-        antinodeX = 2 * locale.x - thisLocale.x
-        antinodeY = 2 * locale.y - thisLocale.y
-        if (
-          antinodeX >= 0 &&
-          antinodeX < rows[0].length &&
-          antinodeY >= 0&&
-          antinodeY < rows.length
-        ) {
-          if (!uniqueAntinodes.has(`${antinodeX},${antinodeY}`)) uniqueAntinodes.add(`${antinodeX},${antinodeY}`)
+        antinode = { x: locale.x + diff.x, y: locale.y + diff.y }
+        if (antinode.x >= 0 && antinode.x < rows[0].length && antinode.y >= 0 && antinode.y < rows.length) {
+          uniqueAntinodes.add(`${antinode.x},${antinode.y}`)
         }
       }
       [thisLocale, ...remainingLocales] = remainingLocales
@@ -56,22 +51,7 @@ const solvePart1 = (rows: string[]) => {
 }
 
 const solvePart2 = (rows: string[]) => {
-  let uniqueAntennas = new Set<string>()
-  let antennaList: Record<string, { x: number, y: number }[]> = {}
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    for (let j = 0; j < row.length; j++) {
-      const char = row[j]
-      if (char == '.') continue
-      if (!uniqueAntennas.has(char)) {
-        uniqueAntennas.add(char)
-        antennaList[char] = [{ x: j, y: i }]
-      } else {
-        antennaList[char].push({ x: j, y: i })
-      }
-    }
-  }
+  const { uniqueAntennas, antennaList } = getAntennaList(rows)
 
   let uniqueAntinodes = new Set()
 
@@ -80,42 +60,20 @@ const solvePart2 = (rows: string[]) => {
     let [thisLocale, ...remainingLocales] = locales
     while(remainingLocales.length > 0) {
       for (let locale of remainingLocales) {
-        const diffx = thisLocale.x - locale.x
-        const diffy = thisLocale.y - locale.y
+        let diff = { x: locale.x - thisLocale.x, y: locale.y - thisLocale.y }
 
-        let upperx = (
-          diffx > 0
-            ? ((thisLocale.x > locale.x) ? thisLocale.x : locale.x)
-            : ((thisLocale.x < locale.x) ? thisLocale.x : locale.x)
-          ) + diffx
-        let uppery = (
-          diffx > 0
-            ? ((thisLocale.x > locale.x) ? thisLocale.y : locale.y)
-            : ((thisLocale.x < locale.x) ? thisLocale.y : locale.y)
-          ) + diffy
-        while ( upperx >= 0 && upperx < rows[0].length && uppery < rows.length && uppery >= 0) {
-          if (!uniqueAntinodes.has(`${upperx},${uppery}`)) uniqueAntinodes.add(`${upperx},${uppery}`)
-          upperx += diffx
-          uppery += diffy
+        let antinode = { x: thisLocale.x, y: thisLocale.y }
+        while (antinode.x >= 0 && antinode.x < rows[0].length && antinode.y >= 0 && antinode.y < rows.length) {
+          uniqueAntinodes.add(`${antinode.x},${antinode.y}`)
+          antinode = { x: antinode.x - diff.x, y: antinode.y - diff.y }
         }
 
-        upperx = (
-          diffx > 0
-            ? ((thisLocale.x < locale.x) ? thisLocale.x : locale.x)
-            : ((thisLocale.x > locale.x) ? thisLocale.x : locale.x)
-          ) + diffx
-        uppery = (
-          diffx > 0
-            ? ((thisLocale.x < locale.x) ? thisLocale.y : locale.y)
-            : ((thisLocale.x > locale.x) ? thisLocale.y : locale.y)
-          ) + diffy
-        while ( upperx >= 0 && upperx < rows[0].length && uppery < rows.length && uppery >= 0) {
-          if (!uniqueAntinodes.has(`${upperx},${uppery}`)) uniqueAntinodes.add(`${upperx},${uppery}`)
-          upperx -= diffx
-          uppery -= diffy
+        antinode = { x: thisLocale.x + diff.x, y: thisLocale.y + diff.y }
+        while (antinode.x >= 0 && antinode.x < rows[0].length && antinode.y >= 0 && antinode.y < rows.length) {
+          uniqueAntinodes.add(`${antinode.x},${antinode.y}`)
+          antinode = { x: antinode.x + diff.x, y: antinode.y + diff.y }
         }
       }
-
       [thisLocale, ...remainingLocales] = remainingLocales
     }
   }
