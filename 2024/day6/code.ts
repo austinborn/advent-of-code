@@ -12,19 +12,21 @@ const getGuardXY = (map: string[][]) => {
 
 const solvePart1 = (rows: string[]) => {
 
-  const map = rows.map(r => r.split(''))
+  let map = rows.map(r => r.split(''))
 
   let {x, y} = getGuardXY(map)
 
+  let obs = map.map(r => r.map(e => e == '#'))
+
   let guardDir = 'up'
   let answer = 1
-  let traversed = getFilledMatrix([rows.length, rows[0].length], () => false)
+  let traversed = getFilledMatrix([rows.length, rows[0].length], false)
   traversed[x][y] = true
 
   while(true) {
     if (guardDir == 'up') {
       if (x == 0) break
-      if (map[x-1][y] == '#') {
+      if (obs[x-1][y]) {
         guardDir = 'right'
       } else {
         x -= 1
@@ -35,7 +37,7 @@ const solvePart1 = (rows: string[]) => {
       }
     } else if (guardDir == 'left') {
       if (y == 0) break
-      if (map[x][y-1] == '#') {
+      if (obs[x][y-1]) {
         guardDir = 'up'
       } else {
         y -= 1
@@ -45,8 +47,8 @@ const solvePart1 = (rows: string[]) => {
         }
       }
     } else if (guardDir == 'down') {
-      if (x == map.length - 1) break
-      if (map[x+1][y] == '#') {
+      if (x == obs.length - 1) break
+      if (obs[x+1][y]) {
         guardDir = 'left'
       } else {
         x += 1
@@ -56,8 +58,8 @@ const solvePart1 = (rows: string[]) => {
         }
       }
     } else { // guardDir == 'right'
-      if (y == map.length - 1) break
-      if (map[x][y+1] == '#') {
+      if (y == obs.length - 1) break
+      if (obs[x][y+1]) {
         guardDir = 'down'
       } else {
         y += 1
@@ -75,7 +77,11 @@ const solvePart1 = (rows: string[]) => {
 const solvePart2 = (rows: string[]) => {
   const map = rows.map(r => r.split(''))
 
-  let {x, y} = getGuardXY(map)
+  const guardXY = getGuardXY(map)
+
+  let {x, y} = guardXY
+
+  let obs = map.map(r => r.map(e => e == '#'))
 
   let allObsPositions: Set<string> = new Set()
   let guardDir = 'up'
@@ -83,7 +89,7 @@ const solvePart2 = (rows: string[]) => {
   while(true) {
     if (guardDir == 'up') {
       if (x == 0) break
-      if (map[x-1][y] == '#') {
+      if (obs[x-1][y]) {
         guardDir = 'right'
       } else {
         x -= 1
@@ -91,23 +97,23 @@ const solvePart2 = (rows: string[]) => {
       }
     } else if (guardDir == 'left') {
       if (y == 0) break
-      if (map[x][y-1] == '#') {
+      if (obs[x][y-1]) {
         guardDir = 'up'
       } else {
         y -= 1
         allObsPositions.add(x+','+y)
       }
     } else if (guardDir == 'down') {
-      if (x == map.length - 1) break
-      if (map[x+1][y] == '#') {
+      if (x == obs.length - 1) break
+      if (obs[x+1][y]) {
         guardDir = 'left'
       } else {
         x += 1
         allObsPositions.add(x+','+y)
       }
     } else { // guardDir == 'right'
-      if (y == map.length - 1) break
-      if (map[x][y+1] == '#') {
+      if (y == obs.length - 1) break
+      if (obs[x][y+1]) {
         guardDir = 'down'
       } else {
         y += 1
@@ -118,66 +124,64 @@ const solvePart2 = (rows: string[]) => {
 
   let answer = 0
 
-  let guardXY = getGuardXY(map)
-
   for (let obsPos of allObsPositions) {
     let [obsX, obsY] = obsPos.split(',')
-    map[obsX][obsY] = '#'
+    obs[obsX][obsY] = true
 
     guardDir = 'up'
 
     let {x, y} = guardXY
 
-    let traversedDir = getFilledMatrix([map.length, map[0].length], () => new Set())
+    let traversedDir = new Set()
 
     while(true) {
       if (guardDir == 'up') {
         if (x == 0) break
-        if (traversedDir[x][y].has('up')) {
+        if (traversedDir.has(`${x},${y}up`)) {
           answer += 1
           break
-        } else traversedDir[x][y].add('up')
-        if (map[x-1][y] == '#') {
+        } else traversedDir.add(`${x},${y}up`)
+        if (obs[x-1][y]) {
           guardDir = 'right'
         } else {
           x -= 1
         }
       } else if (guardDir == 'left') {
         if (y == 0) break
-        if (traversedDir[x][y].has('left')) {
+        if (traversedDir.has(`${x},${y}l`)) {
           answer += 1
           break
-        } else traversedDir[x][y].add('left')
-        if (map[x][y-1] == '#') {
+        } else traversedDir.add(`${x},${y}l`)
+        if (obs[x][y-1]) {
           guardDir = 'up'
         } else {
           y -= 1
         }
       } else if (guardDir == 'down') {
-        if (x == map.length - 1) break
-        if (traversedDir[x][y].has('down')) {
+        if (x == obs.length - 1) break
+        if (traversedDir.has(`${x},${y}d`)) {
           answer += 1
           break
-        } else traversedDir[x][y].add('down')
-        if (map[x+1][y] == '#') {
+        } else traversedDir.add(`${x},${y}d`)
+        if (obs[x+1][y]) {
           guardDir = 'left'
         } else {
           x += 1
         }
       } else { // guardDir == 'right'
-        if (y == map.length - 1) break
-        if (traversedDir[x][y].has('right')) {
+        if (y == obs.length - 1) break
+        if (traversedDir.has(`${x},${y}r`)) {
           answer += 1
           break
-        } else traversedDir[x][y].add('right')
-        if (map[x][y+1] == '#') {
+        } else traversedDir.add(`${x},${y}r`)
+        if (obs[x][y+1]) {
           guardDir = 'down'
         } else {
           y += 1
         }
       }
     }
-    map[obsX][obsY] = '.'
+    obs[obsX][obsY] = false
   }
 
   return answer

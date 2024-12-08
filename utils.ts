@@ -18,10 +18,10 @@ export const getMaxes = (nums: number[], n: number) => nums.reduce((maxes, num) 
   return maxes
 }, Array(n).fill(0))
 
-export const getFilledMatrix = (dims: number[], fillcb: () => any) => {
+export const getFilledMatrix = (dims: number[], fill: any) => {
   const array = []
   for (let i = 0; i < dims[0]; i++) {
-    const filler = dims.length > 1 ? getFilledMatrix(dims.slice(1), fillcb) : fillcb()
+    const filler = dims.length > 1 ? getFilledMatrix(dims.slice(1), fill) : fill
     array.push(filler)
   }
   return array
