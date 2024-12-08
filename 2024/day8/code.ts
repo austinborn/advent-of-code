@@ -2,33 +2,28 @@ import { fetchExample, fetchInput, withTime } from '../../utils'
 
 const getAntennaList = (rows: string[]) => {
   let antennaList: Record<string, { x: number, y: number }[]> = {}
-  let uniqueAntennas = new Set<string>()
 
   for (let y = 0; y < rows.length; y++) {
     const row = rows[y]
     for (let x = 0; x < row.length; x++) {
       const char = row[x]
       if (char == '.') continue
-      if (!uniqueAntennas.has(char)) {
-        uniqueAntennas.add(char)
-        antennaList[char] = [{ x, y }]
-      } else {
-        antennaList[char].push({ x, y })
-      }
+      if (!antennaList[char]) antennaList[char] = []
+
+      antennaList[char].push({ x, y })
     }
   }
 
-  return { uniqueAntennas, antennaList }
+  return antennaList
 }
 
 const solvePart1 = (rows: string[]) => {
-  const { uniqueAntennas, antennaList } = getAntennaList(rows)
+  const antennaList = getAntennaList(rows)
 
   let uniqueAntinodes = new Set()
 
-  for (let char of uniqueAntennas) {
-    let locales = antennaList[char]
-    let [thisLocale, ...remainingLocales] = locales
+  for (let char of Object.keys(antennaList)) {
+    let [thisLocale, ...remainingLocales] = antennaList[char]
     while(remainingLocales.length > 0) {
       for (let locale of remainingLocales) {
         let diff = { x: locale.x - thisLocale.x, y: locale.y - thisLocale.y }
@@ -51,13 +46,12 @@ const solvePart1 = (rows: string[]) => {
 }
 
 const solvePart2 = (rows: string[]) => {
-  const { uniqueAntennas, antennaList } = getAntennaList(rows)
+  const antennaList = getAntennaList(rows)
 
   let uniqueAntinodes = new Set()
 
-  for (let char of uniqueAntennas) {
-    let locales = antennaList[char]
-    let [thisLocale, ...remainingLocales] = locales
+  for (let char of Object.keys(antennaList)) {
+    let [thisLocale, ...remainingLocales] = antennaList[char]
     while(remainingLocales.length > 0) {
       for (let locale of remainingLocales) {
         let diff = { x: locale.x - thisLocale.x, y: locale.y - thisLocale.y }
