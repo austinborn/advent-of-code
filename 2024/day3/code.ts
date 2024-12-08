@@ -1,4 +1,4 @@
-import { fetchExample, fetchInput } from '../../utils'
+import { fetchExample, fetchInput, withTime } from '../../utils'
 
 const solvePart1 = (input: string) => {
   let answer = 0
@@ -36,13 +36,14 @@ const solvePart2 = (input: string) => {
 
 const main = async () => {
   const input = await fetchInput()
-  const inputExample = await fetchExample()
+  const inputExample1 = await fetchExample('inputExample1')
+  const inputExample2 = await fetchExample('inputExample2')
 
-  console.log('\nPart 1 (example):', solvePart1(inputExample))
-  console.log('\nPart 1:', solvePart1(input))
+  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample1)))
+  console.log('\nPart 1:', withTime(() => solvePart1(input)))
 
-  console.log('\nPart 2 (example):', solvePart2(inputExample))
-  console.log('\nPart 2:', solvePart2(input))
+  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample2)))
+  console.log('\nPart 2:', withTime(() => solvePart2(input)))
 }
 
 main()

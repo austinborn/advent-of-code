@@ -1,4 +1,4 @@
-import { fetchExample, fetchInput } from '../../utils'
+import { fetchExample, fetchInput, withTime } from '../../utils'
 
 class GraphNode {
   page
@@ -286,11 +286,11 @@ const main = async () => {
   const input = await fetchInput()
   const inputExample = await fetchExample()
 
-  console.log('\nPart 1 (example):', solvePart1(inputExample))
-  console.log('\nPart 1:', solvePart1(input))
+  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample)))
+  console.log('\nPart 1:', withTime(() => solvePart1(input)))
 
-  console.log('\nPart 2 (example):', solvePart2(inputExample))
-  console.log('\nPart 2:', solvePart2(input))
+  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample)))
+  console.log('\nPart 2:', withTime(() => solvePart2(input)))
 }
 
 main()

@@ -1,7 +1,8 @@
-import { fetchExample, fetchInput } from '../../utils'
+import { fetchExample, fetchInput, withTime } from '../../utils'
 
 const numsHasTest = (nums: number[], test: number) => {
   if(nums.length == 1) return nums[0] == test
+  else if (nums[0] > test) return false
   let [num1, num2, ...remainingNums] = [...nums]
   return (
     numsHasTest([num1+num2, ...remainingNums], test) ||
@@ -11,6 +12,7 @@ const numsHasTest = (nums: number[], test: number) => {
 
 const numsHasTest2 = (nums: number[], test: number) => {
   if(nums.length == 1) return nums[0] == test
+  else if (nums[0] > test) return false
   let [num1, num2, ...remainingNums] = [...nums]
   return (
     numsHasTest2([num1+num2, ...remainingNums], test) ||
@@ -47,11 +49,11 @@ const main = async () => {
   const input = (await fetchInput()).split('\n')
   const inputExample = (await fetchExample()).split('\n')
 
-  console.log('\nPart 1 (example):', solvePart1(inputExample))
-  console.log('\nPart 1:', solvePart1(input))
+  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample)))
+  console.log('\nPart 1:', withTime(() => solvePart1(input)))
 
-  console.log('\nPart 2 (example):', solvePart2(inputExample))
-  console.log('\nPart 2:', solvePart2(input))
+  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample)))
+  console.log('\nPart 2:', withTime(() => solvePart2(input)))
 }
 
 main()
