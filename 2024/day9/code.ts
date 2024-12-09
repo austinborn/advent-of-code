@@ -1,42 +1,32 @@
 import { fetchExample, fetchInput, withTime } from '../../utils'
 
+const SPACE = 'space'
+const FILE = 'file'
+
 const getFileId = (idx: number) => idx / 2
 
 const solvePart1 = (input: string) => {
   let answer = 0
 
-  let idx = 0
   let endFileIdx = input.length - 1
   let endBlocksRemaining = parseInt(input[endFileIdx])
-
   let virtualIdx = 0
 
-  while (idx < endFileIdx) {
-    let count = parseInt(input[idx])
-    if ((idx % 2) == 0) {
-      while (count > 0) {
-        answer += getFileId(idx) * virtualIdx
-        count -= 1
-        virtualIdx += 1
-      }
-    } else {
-      while (count > 0) {
+  for (let idx = 0; idx < endFileIdx; idx++) {
+    for (let count = 0; count < parseInt(input[idx]); count++) {
+      if ((idx % 2) != 0) {
         if (endBlocksRemaining == 0) {
           endFileIdx -= 2
           endBlocksRemaining = parseInt(input[endFileIdx])
         }
-        answer += getFileId(endFileIdx) * virtualIdx
-        count -= 1
-        virtualIdx += 1
         endBlocksRemaining -= 1
       }
+      answer += getFileId((idx % 2) == 0 ? idx : endFileIdx) * virtualIdx++
     }
-    idx += 1
   }
 
   while (endBlocksRemaining > 0) {
-    answer += getFileId(endFileIdx) * virtualIdx
-    virtualIdx += 1
+    answer += getFileId(endFileIdx) * virtualIdx++
     endBlocksRemaining -= 1
   }
 
@@ -44,48 +34,39 @@ const solvePart1 = (input: string) => {
 }
 
 const solvePart2 = (input: string) => {
-  let sequence = []
+  const sequence = []
 
   for (let idx = 0; idx < input.length; idx++) {
-    if ((idx % 2) == 0) {
-      sequence.push({ type: 'file', fileId: getFileId(idx), count: parseInt(input[idx]) })
-    } else {
-      sequence.push({ type: 'space', space: parseInt(input[idx]) })
-    }
+    sequence.push((idx % 2) == 0
+      ? { type: FILE, fileId: getFileId(idx), count: parseInt(input[idx]) }
+      : { type: SPACE, space: parseInt(input[idx]) }
+    )
   }
 
-  let idx = sequence.length - 1
+  for (let i = sequence.length - 1; i > 0; i--) {
+    if (sequence[i].type != FILE) continue
 
-  while (idx > 0) {
-    if (sequence[idx].type == 'file') {
-      let spaceIdx = 0
-      while (spaceIdx < idx) {
-        if ((sequence[spaceIdx].type == 'space') && sequence[idx].count <= sequence[spaceIdx].space) {
-          let remainingSpace = sequence[spaceIdx].space - sequence[idx].count
-          const filesToInsert = sequence.splice(idx, 1, { type: 'space', space: sequence[idx].count })
-          if (remainingSpace > 0) {
-            filesToInsert.push({ type: 'space', space: remainingSpace })
-            idx += 1
-          }
-          sequence.splice(spaceIdx, 1, ...filesToInsert)
-          break
+    for (let spaceIdx = 0; spaceIdx < i; spaceIdx++) {
+      if ((sequence[spaceIdx].type == SPACE) && sequence[i].count <= sequence[spaceIdx].space) {
+        const remainingSpace = sequence[spaceIdx].space - sequence[i].count
+        const filesToInsert = sequence.splice(i, 1, { type: SPACE, space: sequence[i].count })
+        if (remainingSpace > 0) {
+          filesToInsert.push({ type: SPACE, space: remainingSpace })
+          i += 1
         }
-        spaceIdx += 1
+        sequence.splice(spaceIdx, 1, ...filesToInsert)
+        break
       }
     }
-    idx -= 1
   }
 
   let virtualIdx = 0
   let answer = 0
 
   for (let block of sequence) {
-    if (block.type == 'file') {
-      let count = block.count
-      while (count > 0) {
-        answer += block.fileId * virtualIdx
-        virtualIdx += 1
-        count -= 1
+    if (block.type == FILE) {
+      for (let count = 0; count < block.count; count++) {
+        answer += block.fileId * virtualIdx++
       }
     } else {
       virtualIdx += block.space
