@@ -85,5 +85,5 @@ export const fetchText = async (endpoint: string, fileName: string, regex?: RegE
 export const withTime = (cb: () => number) => {
   const start = Date.now()
   let answer = cb()
-  return `${answer.toString()} (${(Date.now() - start)/1000}s)`
+  return `${answer.toString()} (${(Date.now() - start)}ms)`
 }
