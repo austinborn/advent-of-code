@@ -1,6 +1,6 @@
 import { fetchExample, fetchInput, withTime } from '../../utils'
 
-const solvePart1 = (rows: string[]) => {
+const solvePart1 = (input: string[]) => {
   let answer = 0
 
   // TODO
@@ -8,7 +8,7 @@ const solvePart1 = (rows: string[]) => {
   return answer
 }
 
-const solvePart2 = (rows: string[]) => {
+const solvePart2 = (input: string[]) => {
   let answer = 0
 
   // TODO
