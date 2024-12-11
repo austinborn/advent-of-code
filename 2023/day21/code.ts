@@ -10,7 +10,9 @@ const getStartingPos = (rows: string[]) => {
   return { x: 0, y: 0 }
 }
 
-const getParity = (nums: number[]) => getSum(nums) % 2
+const getParity = (nums: number[]) => (
+  getSum(nums) < 0 ? (-getSum(nums) % 2) : (getSum(nums) % 2)
+)
 
 const getPosCount = (i: number, single: number, l1: number, l2: number) => (
   single+l1*Math.ceil(i/2)**2+l2*(Math.floor(i/2)+1)*Math.floor(i/2)/2
@@ -32,7 +34,7 @@ const updateCacheY = (y: number, max: number) => {
   if (!modCacheY[y]) modCacheY[y] = ((y % max) + max) % max
 }
 
-const solve = (rows: string[], steps: number) => {
+const solve = (rows: string[], steps: number, flipParity: boolean = false) => {
   let answer = 0
 
   const { x, y } = getStartingPos(rows)
@@ -97,7 +99,7 @@ const solve = (rows: string[], steps: number) => {
   for (let pos of validPos) {
     let [x, y] = pos.split(',').map(c => parseInt(c))
     if (
-      !getParity([x, y, startParity]) //Same parity
+      !getParity([x, y, startParity, flipParity ? 1 : 0]) //Same parity
     ) answer += 1
   }
 
@@ -127,7 +129,7 @@ const main = async () => {
 
   let answers = []
   for (let layer = 0; layer < 3; layer++){
-    answers.push(solve(input, HALFWIDTH + layer * WIDTH))
+    answers.push(solve(input, HALFWIDTH + layer * WIDTH, true))
   }
 
   const centralDiamond = answers[0]
