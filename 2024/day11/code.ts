@@ -4,11 +4,12 @@ const finalStoneCount = {}
 
 const getNumStones = (stones: number[], blinksLeft: number) => {
   if (blinksLeft == 0) return stones.length
-  if (!finalStoneCount[blinksLeft]) finalStoneCount[blinksLeft] = {}
 
   let total = 0
   for (let stone of stones) {
-    if (finalStoneCount[blinksLeft][stone]) total += finalStoneCount[blinksLeft][stone]
+    if (!finalStoneCount[stone]) finalStoneCount[stone] = {}
+
+    if (finalStoneCount[stone][blinksLeft]) total += finalStoneCount[stone][blinksLeft]
     else {
       let num
       if (stone == 0) {
@@ -21,7 +22,7 @@ const getNumStones = (stones: number[], blinksLeft: number) => {
       } else {
         num = getNumStones([stone * 2024], blinksLeft - 1)
       }
-      finalStoneCount[blinksLeft][stone] = num
+      finalStoneCount[stone][blinksLeft] = num
       total += num
     }
   }
