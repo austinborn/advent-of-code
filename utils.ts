@@ -52,6 +52,14 @@ export const getFactors = (num: number) => {
 
 export const fetchInput = async () => fetchText("/input", "input")
 
+export const writeInput = (input: string, fileName?: string) => {
+  let year = process.argv[2]
+  let day = process.argv[3]
+
+  const filePath = `./${year}/day${day}/${fileName ?? "input"}.txt`
+  writeFileSync(filePath, input)
+}
+
 // Note: the regex below doesn't always work, just paste the example input manually in that case
 export const fetchExample = async (filename?: string) => fetchText("", filename ?? "inputExample", /<code>(.|\n)*?<\/code>/)
 

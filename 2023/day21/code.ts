@@ -1,4 +1,4 @@
-import { fetchExample, fetchInput, withTime } from '../../utils'
+import { fetchExample, fetchInput, getSum, withTime } from '../../utils'
 
 const getStartingPos = (rows: string[]) => {
   for (let x = 0; x < rows.length; x++) {
@@ -10,137 +10,100 @@ const getStartingPos = (rows: string[]) => {
   return { x: 0, y: 0 }
 }
 
-const solvePart1 = (rows: string[], steps: number) => {
+const getParity = (nums: number[]) => getSum(nums) % 2
+
+const getPosCount = (i: number, single: number, l1: number, l2: number) => (
+  single+l1*Math.ceil(i/2)**2+l2*(Math.floor(i/2)+1)*Math.floor(i/2)/2
+)
+
+let modCacheX = {}
+let modCacheY = {}
+
+const resetCaches = () => {
+  modCacheX = {}
+  modCacheY = {}
+}
+
+const updateCacheX = (x: number, max: number) => {
+  if (!modCacheX[x]) modCacheX[x] = ((x % max) + max) % max
+}
+
+const updateCacheY = (y: number, max: number) => {
+  if (!modCacheY[y]) modCacheY[y] = ((y % max) + max) % max
+}
+
+const solve = (rows: string[], steps: number) => {
   let answer = 0
 
   const { x, y } = getStartingPos(rows)
+  rows[x] = rows[x].split('S').join('.')
 
-  const startingPosParity = (x + y) % 2
+  modCacheX[x] = x
+  modCacheY[y] = y
+
+  const startParity = getParity([x, y])
 
   let validPos = new Set<string>()
   validPos.add(`${x},${y}`)
 
   let leadingPos =[{x, y}]
-  let nextLeadingPos = []
+  validPos.add(`${x},${y}`)
 
-  for (let i = 0; i < steps; i++) {
+  for (let i = 1; i <= steps; i++) {
+    let nextLeadingPos = []
     for (let pos of leadingPos) {
       let {x: posX, y: posY } = pos
-      if (posX > 0 && rows[posX-1][posY] == '.') {
-        if (!validPos.has(`${posX-1},${posY}`)) {
-          validPos.add(`${posX-1},${posY}`)
-          nextLeadingPos.push({ x: posX-1, y: posY })
-        }
+      updateCacheX(posX-1, rows.length)
+      updateCacheX(posX+1, rows.length)
+      updateCacheY(posY-1, rows[0].length)
+      updateCacheY(posY+1, rows[0].length)
+
+      if (
+        rows[modCacheX[posX-1]][modCacheY[posY]] == '.' &&
+        !validPos.has(`${posX-1},${posY}`)
+      ) {
+        validPos.add(`${posX-1},${posY}`)
+        nextLeadingPos.push({ x: posX-1, y: posY })
       }
-      if (posX < (rows.length - 1) && rows[posX+1][posY] == '.') {
-        if (!validPos.has(`${posX+1},${posY}`)) {
-          validPos.add(`${posX+1},${posY}`)
-          nextLeadingPos.push({ x: posX+1, y: posY })
-        }
+
+      if (
+        rows[modCacheX[posX+1]][modCacheY[posY]] == '.' &&
+        !validPos.has(`${posX+1},${posY}`)
+      ) {
+        validPos.add(`${posX+1},${posY}`)
+        nextLeadingPos.push({ x: posX+1, y: posY })
       }
-      if (posY > 0 && rows[posX][posY-1] == '.') {
-        if (!validPos.has(`${posX},${posY-1}`)) {
-          validPos.add(`${posX},${posY-1}`)
-          nextLeadingPos.push({ x: posX, y: posY-1 })
-        }
+
+      if (
+        rows[modCacheX[posX]][modCacheY[posY-1]] == '.' &&
+        !validPos.has(`${posX},${posY-1}`)
+      ) {
+        validPos.add(`${posX},${posY-1}`)
+        nextLeadingPos.push({ x: posX, y: posY-1 })
       }
-      if (posY < (rows[0].length - 1) && rows[posX][posY+1] == '.') {
-        if (!validPos.has(`${posX},${posY+1}`)) {
-          validPos.add(`${posX},${posY+1}`)
-          nextLeadingPos.push({ x: posX, y: posY+1 })
-        }
+
+      if (
+        rows[modCacheX[posX]][modCacheY[posY+1]] == '.' &&
+        !validPos.has(`${posX},${posY+1}`)
+      ) {
+        validPos.add(`${posX},${posY+1}`)
+        nextLeadingPos.push({ x: posX, y: posY+1 })
       }
     }
+
     leadingPos = nextLeadingPos
-    nextLeadingPos = []
   }
 
   for (let pos of validPos) {
-    let [x, y] = pos.split(',')
-    if ((parseInt(x) + parseInt(y)) % 2 == startingPosParity) answer += 1
+    let [x, y] = pos.split(',').map(c => parseInt(c))
+    if (
+      !getParity([x, y, startParity]) //Same parity
+    ) answer += 1
   }
 
-  return answer
-}
-
-const solvePart2 = (rows: string[], steps: number) => {
-  const { x, y } = getStartingPos(rows)
-
-  const startingPosParity = (x + y) % 2
-
-  let spotsAccessible = {}
-  let dir = [-1,0,1]
-  for (let vertical of dir) {
-    spotsAccessible[vertical] = {}
-    for (let horizontal of dir) {
-      spotsAccessible[vertical][horizontal] = {}
-
-      let visitedPos = {}
-
-      let leadingPos = [{
-        x: x * (vertical + 1),
-        y: y * (horizontal + 1)
-      }]
-
-      let validPos = new Set<string>()
-      validPos.add(`${leadingPos[0].x},${leadingPos[0].y}`)
-
-      let nextLeadingPos = []
-
-      // TODO
-    }
-  }
-
-
-
-  // let validPos = new Set<string>()
-  // validPos.add(`${x},${y}`)
-
-  // let leadingPos =[{x, y}]
-  // let nextLeadingPos = []
-
-  // const maxX = rows.length
-  // const maxY = rows[0].length
-
-  // for (let i = 0; i < steps; i++) {
-  //   for (let pos of leadingPos) {
-  //     let {x: posX, y: posY } = pos
-
-  //     if (rows[modCacheX[posX-1]][modCacheY[posY]] == '.') {
-  //       if (!validPos.has(`${posX-1},${posY}`)) {
-  //         validPos.add(`${posX-1},${posY}`)
-  //         nextLeadingPos.push({ x: posX-1, y: posY })
-  //       }
-  //     }
-  //     if (rows[modCacheX[posX+1]][modCacheY[posY]] == '.') {
-  //       if (!validPos.has(`${posX+1},${posY}`)) {
-  //         validPos.add(`${posX+1},${posY}`)
-  //         nextLeadingPos.push({ x: posX+1, y: posY })
-  //       }
-  //     }
-  //     if (rows[modCacheX[posX]][modCacheY[posY-1]] == '.') {
-  //       if (!validPos.has(`${posX},${posY-1}`)) {
-  //         validPos.add(`${posX},${posY-1}`)
-  //         nextLeadingPos.push({ x: posX, y: posY-1 })
-  //       }
-  //     }
-  //     if (rows[modCacheX[posX]][modCacheY[posY+1]] == '.') {
-  //       if (!validPos.has(`${posX},${posY+1}`)) {
-  //         validPos.add(`${posX},${posY+1}`)
-  //         nextLeadingPos.push({ x: posX, y: posY+1 })
-  //       }
-  //     }
-  //   }
-  //   leadingPos = nextLeadingPos
-  //   nextLeadingPos = []
-  // }
-
-  // for (let pos of validPos) {
-  //   let [x, y] = pos.split(',')
-  //   if ((parseInt(x) + parseInt(y)) % 2 == startingPosParity) answer += 1
-  // }
-
-  let answer = 0
+  const splitRow = rows[x].split('')
+  splitRow[y] = 'S'
+  rows[x] = splitRow.join('')
 
   return answer
 }
@@ -149,11 +112,29 @@ const main = async () => {
   const input = (await fetchInput()).split('\n')
   const inputExample = (await fetchExample()).split('\n')
 
-  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample, 6)))
-  console.log('\nPart 1:', withTime(() => solvePart1(input, 64)))
+  console.log('\nPart 1 (example):', withTime(() => solve(inputExample, 6)))
+  resetCaches()
 
-  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample, 6)))
-  console.log('\nPart 2:', withTime(() => solvePart2(input, 1)))
+  console.log('\nPart 1:', withTime(() => solve(input, 64)))
+  resetCaches()
+
+  console.log('\nPart 2 (example):', withTime(() => solve(inputExample, 500)))
+  resetCaches()
+
+  let WIDTH = 131
+  let HALFWIDTH = Math.floor(WIDTH / 2)
+  let PROBLEM_LAYERS = (26501365 - HALFWIDTH) / WIDTH
+
+  let answers = []
+  for (let layer = 0; layer < 3; layer++){
+    answers.push(solve(input, HALFWIDTH + layer * WIDTH))
+  }
+
+  const centralDiamond = answers[0]
+  const layer1 = answers[1] - answers[0]
+  const layer2 = answers[2] - answers[1]
+
+  console.log('\nPart 2:', withTime(() => getPosCount(PROBLEM_LAYERS, centralDiamond, layer1, layer2)))
 }
 
 main()
