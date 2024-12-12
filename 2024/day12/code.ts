@@ -27,10 +27,7 @@ const solvePart1 = (input: string[]) => {
 
       if (leftGroup != undefined && topGroup != undefined) {
         if (leftGroup != topGroup) {
-          groupStats[leftGroup] = {
-            a: groupStats[leftGroup].a + groupStats[topGroup].a,
-            p: groupStats[leftGroup].p + groupStats[topGroup].p
-          }
+          groupStats[leftGroup] = { a: groupStats[leftGroup].a + groupStats[topGroup].a, p: groupStats[leftGroup].p + groupStats[topGroup].p }
           groupStats[topGroup] = { a: 0, p: 0 }
 
           forwardedTo[topGroup] = leftGroup
@@ -82,10 +79,7 @@ const solvePart2 = (input: string[]) => {
 
       if (leftGroup != undefined && topGroup != undefined) {
         if (leftGroup != topGroup) {
-          groupStats[leftGroup] = {
-            a: groupStats[leftGroup].a + groupStats[topGroup].a,
-            s: groupStats[leftGroup].s + groupStats[topGroup].s
-          }
+          groupStats[leftGroup] = { a: groupStats[leftGroup].a + groupStats[topGroup].a, s: groupStats[leftGroup].s + groupStats[topGroup].s }
           groupStats[topGroup] = { a: 0, s: 0 }
 
           forwardedTo[topGroup] = leftGroup
@@ -93,27 +87,24 @@ const solvePart2 = (input: string[]) => {
 
         groupMap[x][y] = leftGroup
 
-        let deltaP = topRightGroup != undefined ? 0 : -2
+        let deltaS = topRightGroup != undefined ? 0 : -2
 
-        groupStats[leftGroup] = {
-          a: groupStats[leftGroup].a + 1,
-          s: groupStats[leftGroup].s + deltaP
-        }
+        groupStats[leftGroup] = { a: groupStats[leftGroup].a + 1, s: groupStats[leftGroup].s + deltaS }
       } else if (topGroup != undefined) {
         groupMap[x][y] = topGroup
 
-        let deltaP = (
+        let deltaS = (
           (topLeftGroup != undefined ? 2 : 0) +
           (topRightGroup != undefined ? 2 : 0)
         )
 
-        groupStats[topGroup] = { a: groupStats[topGroup].a + 1, s: groupStats[topGroup].s + deltaP }
+        groupStats[topGroup] = { a: groupStats[topGroup].a + 1, s: groupStats[topGroup].s + deltaS }
       } else if (leftGroup != undefined) {
         groupMap[x][y] = leftGroup
 
-        let deltaP = topLeftGroup != undefined ? 2 : 0
+        let deltaS = topLeftGroup != undefined ? 2 : 0
 
-        groupStats[leftGroup] = { a: groupStats[leftGroup].a + 1, s: groupStats[leftGroup].s + deltaP }
+        groupStats[leftGroup] = { a: groupStats[leftGroup].a + 1, s: groupStats[leftGroup].s + deltaS }
       } else {
         groupMap[x][y] = groupStats.length
         groupStats.push({ a: 1, s: 4 })
