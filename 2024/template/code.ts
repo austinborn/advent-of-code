@@ -1,19 +1,15 @@
 import { fetchExample, fetchInput, withTime } from '../../utils'
 
 const solvePart1 = (input: string[]) => {
-  let answer = 0
+  
 
-  // TODO
-
-  return answer
+  return 0
 }
 
 const solvePart2 = (input: string[]) => {
-  let answer = 0
+  
 
-  // TODO
-
-  return answer
+  return 0
 }
 
 const main = async () => {
