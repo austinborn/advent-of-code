@@ -10,6 +10,8 @@ dotenvConfig()
 
 export const getSum = (nums: number[]) => nums.reduce((sum, num) => sum + num, 0)
 
+export const getMod = (num: number, mod: number) => ((num % mod) + mod) % mod
+
 // O(n^2) instead of O(n log n)
 export const getMaxes = (nums: number[], n: number) => nums.reduce((maxes, num) => {
   for (let i = 0; i < maxes.length; i++) {
@@ -93,5 +95,11 @@ export const fetchText = async (endpoint: string, fileName: string, regex?: RegE
 export const withTime = (cb: () => number) => {
   const start = Date.now()
   let answer = cb()
+  return `${answer.toString()} (${(Date.now() - start)}ms)`
+}
+
+export const withTimeAsync = async (cb: () => Promise<number>) => {
+  const start = Date.now()
+  let answer = await cb()
   return `${answer.toString()} (${(Date.now() - start)}ms)`
 }
