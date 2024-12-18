@@ -12,6 +12,14 @@ export const getSum = (nums: number[]) => nums.reduce((sum, num) => sum + num, 0
 
 export const getMod = (num: number, mod: number) => ((num % mod) + mod) % mod
 
+const getModCache: { [mod: number]: { [num: number]: number } } = {}
+
+export const getModWithCache = (num: number, mod: number) => {
+  if (!getModCache[mod]) getModCache[mod] = {}
+  if (!getModCache[mod][num]) getModCache[mod][num] = getMod(num, mod)
+  return getModCache[mod][num]
+}
+
 // O(n^2) instead of O(n log n)
 export const getMaxes = (nums: number[], n: number) => nums.reduce((maxes, num) => {
   for (let i = 0; i < maxes.length; i++) {
@@ -92,7 +100,7 @@ export const fetchText = async (endpoint: string, fileName: string, regex?: RegE
   }
 }
 
-export const withTime = (cb: () => number) => {
+export const withTime = (cb: () => any) => {
   const start = Date.now()
   let answer = cb()
   return `${answer.toString()} (${(Date.now() - start)}ms)`
