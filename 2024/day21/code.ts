@@ -3,18 +3,18 @@ import { fetchExample, fetchInput, withTime } from '../../utils'
 const getPermutations = (str: string) => {
   let allStr = []
 
-  const permute = (charsLeft: string[], totalStr: string[]) => {
-    if (charsLeft.length == 0) allStr.push(totalStr.join(""))
+  const permute = (charsLeft: string[], totalStr: string) => {
+    if (charsLeft.length == 0) allStr.push(totalStr)
     else {
       for (let i = 0; i < charsLeft.length; i++) {
         let newCharsLeft = [...charsLeft]
         let char = newCharsLeft.splice(i, 1)[0]
-        permute(newCharsLeft, [char, ...totalStr])
+        permute(newCharsLeft, char + totalStr)
       }
     }
   }
 
-  permute(str.split(''), [])
+  permute(str.split(''), "")
 
   return [...new Set(allStr)]
 }
@@ -28,16 +28,27 @@ const getDirSeqs = (buttonFromCoord: number[], buttonToCoord: number[]) => {
   return getPermutations(seq).map(s => s + "A")
 }
 
+const pathAvoidsSpace = (coord: number[], space: number[], path: string) => {
+  for (let dir of path) {
+    if (dir == "^") coord[1] = coord[1] - 1
+    else if (dir == "v") coord[1] = coord[1] + 1
+    else if (dir == "<") coord[0] = coord[0] - 1
+    else if (dir == ">") coord[0] = coord[0] + 1
+    if (coord[0] == space[0] && coord[1] == space[1]) return false
+  }
+  return true
+}
+
 const numPadSquares = {
   "7": [0, 0], "8": [1, 0], "9": [2, 0],
   "4": [0, 1], "5": [1, 1], "6": [2, 1],
   "1": [0, 2], "2": [1, 2], "3": [2, 2],
-               "0": [1, 3], "A": [2, 3],
+  "0": [1, 3], "A": [2, 3],
 }
 const numPadKeys = Object.keys(numPadSquares)
 
 const dirPadSquares = {
-               "^": [1, 0], "A": [2, 0],
+  "^": [1, 0], "A": [2, 0],
   "<": [0, 1], "v": [1, 1], ">": [2, 1],
 }
 const dirPadKeys = Object.keys(dirPadSquares)
@@ -47,17 +58,7 @@ for (let buttonFrom of dirPadKeys) {
   dirPadSeq[buttonFrom] = {}
   for (let buttonTo of dirPadKeys) {
     const allSeq = getDirSeqs(dirPadSquares[buttonFrom], dirPadSquares[buttonTo])
-    dirPadSeq[buttonFrom][buttonTo] = allSeq.filter(s => {
-      const coord: number[] = [...dirPadSquares[buttonFrom]]
-      for (let dir of s) {
-        if (dir == "^") coord[1] = coord[1] - 1
-        else if (dir == "v") coord[1] = coord[1] + 1
-        else if (dir == "<") coord[0] = coord[0] - 1
-        else if (dir == ">") coord[0] = coord[0] + 1
-        if (coord[0] == 0 && coord[1] == 0) return false
-      }
-      return true
-    })
+    dirPadSeq[buttonFrom][buttonTo] = allSeq.filter(s => pathAvoidsSpace([...dirPadSquares[buttonFrom]], [0, 0], s))
   }
 }
 
@@ -66,17 +67,7 @@ for (let buttonFrom of numPadKeys) {
   numPadSeq[buttonFrom] = {}
   for (let buttonTo of numPadKeys) {
     const allSeq = getDirSeqs(numPadSquares[buttonFrom], numPadSquares[buttonTo])
-    numPadSeq[buttonFrom][buttonTo] = allSeq.filter(s => {
-      const coord: number[] = [...numPadSquares[buttonFrom]]
-      for (let dir of s) {
-        if (dir == "^") coord[1] = coord[1] - 1
-        else if (dir == "v") coord[1] = coord[1] + 1
-        else if (dir == "<") coord[0] = coord[0] - 1
-        else if (dir == ">") coord[0] = coord[0] + 1
-        if (coord[0] == 0 && coord[1] == 3) return false
-      }
-      return true
-    })
+    numPadSeq[buttonFrom][buttonTo] = allSeq.filter(s => pathAvoidsSpace([...numPadSquares[buttonFrom]], [0, 3], s))
   }
 }
 
@@ -109,18 +100,15 @@ const getSmallestLen = (buttonFrom: string, buttonTo: string, layer: number) => 
 const solvePart = (input: string[], intermediateBots: number) => {
   let answer = 0
   for (let code of input) {
-    const codeStr = code.slice(0, 3)
-    const number = parseInt(codeStr)
-    const codeDigits = code.split('')
 
     let curButton: string = "A"
     let len = 0
-    for (let nextButton of codeDigits) {
+    for (let nextButton of code.split('')) {
       len += getSmallestLen(curButton, nextButton, intermediateBots)
       curButton = nextButton
     }
 
-    answer += len * number
+    answer += len * parseInt(code.slice(0, 3))
   }
 
   return answer
