@@ -50,16 +50,16 @@ const solvePart2 = (input: string[]) => {
     const newLANSet = new Set<string>()
     for (let fullLAN of fullLANs) {
       for (let c of allCs) {
-        if (!fullLAN.includes(c)) {
-          let canJoinLAN = true
-          for (let cLAN of fullLAN) {
-            if (!pairsWithComputer[c].has(cLAN)) {
-              canJoinLAN = false
-              break
-            }
+        if (fullLAN.includes(c)) continue
+
+        let canJoinLAN = true
+        for (let cLAN of fullLAN) {
+          if (!pairsWithComputer[c].has(cLAN)) {
+            canJoinLAN = false
+            break
           }
-          if (canJoinLAN) newLANSet.add([c, ...fullLAN].sort().join(','))
         }
+        if (canJoinLAN) newLANSet.add([c, ...fullLAN].sort().join(','))
       }
     }
 
