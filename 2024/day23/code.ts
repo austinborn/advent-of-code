@@ -1,84 +1,57 @@
 import { fetchExample, fetchInput, withTime } from '../../utils'
 
-const hasT = (c1: string, c2: string, c3: string) => c1[0] == 't' || c2[0] == 't' || c3[0] == 't'
+const solvePart = (input: string[]) => {
+  const edges: {[node: string]: Set<string> } = {}
 
-const solvePart1 = (input: string[]) => {
-  let pairsWithComputer: { [c1: string]: Set<string> } = {}
-
-  let trifectas = 0
-
-  for (let pair of input) {
-    const [c1, c2] = pair.split('-')
-    if (pairsWithComputer[c1] == undefined) pairsWithComputer[c1] = new Set()
-    if (pairsWithComputer[c2] == undefined) pairsWithComputer[c2] = new Set()
-
-    if (pairsWithComputer[c1].size > 0 && pairsWithComputer[c2].size > 0) {
-      for (let c3 of pairsWithComputer[c1]) {
-        if (pairsWithComputer[c2].has(c3) && hasT(c1, c2, c3)) {
-          trifectas += 1
-        }
+  const getGroups = (startingNode: string) => {
+    const seen = new Set<string>();
+    const queue = [startingNode];
+  
+    while (queue.length) {
+      const node = queue.shift()
+      // console.log("Checking:", node)
+      if (!seen.has(node) && edges[node].isSupersetOf(seen)) {
+        // console.log("Push:", edges[node])
+        seen.add(node)
+        queue.push(...edges[node])
       }
     }
 
-    pairsWithComputer[c1].add(c2)
-    pairsWithComputer[c2].add(c1)
+    // console.log(startingNode, seen)
+  
+    return [...seen]
   }
 
-  return trifectas
-}
-
-const solvePart2 = (input: string[]) => {
-  let pairsWithComputer: { [c1: string]: Set<string> } = {}
-
-  let fullLANs: string[][] = []
-
-  for (let pair of input) {
-    const [c1, c2] = pair.split('-')
-    if (pairsWithComputer[c1] == undefined) pairsWithComputer[c1] = new Set()
-    if (pairsWithComputer[c2] == undefined) pairsWithComputer[c2] = new Set()
-
-    pairsWithComputer[c1].add(c2)
-    pairsWithComputer[c2].add(c1)
-    fullLANs.push([c1,c2])
+  const nodes = new Set<string>()
+  
+  for (let line of input) {
+    const [a, b] = line.trim().split('-')
+    nodes.add(a)
+    nodes.add(b)
+    if (!edges[a]) edges[a] = new Set()
+    if (!edges[b]) edges[b] = new Set()
+    edges[a].add(b)
+    edges[b].add(a)
   }
 
-  let allCs = Object.keys(pairsWithComputer)
-  let newLANs = fullLANs
+  let largest = 0
 
-  while (newLANs.length > 0) {
-    fullLANs = newLANs
-    const newLANSet = new Set<string>()
-    for (let fullLAN of fullLANs) {
-      for (let c of allCs) {
-        if (fullLAN.includes(c)) continue
-
-        let canJoinLAN = true
-        for (let cLAN of fullLAN) {
-          if (!pairsWithComputer[c].has(cLAN)) {
-            canJoinLAN = false
-            break
-          }
-        }
-        if (canJoinLAN) newLANSet.add([c, ...fullLAN].sort().join(','))
-      }
-    }
-
-    newLANs = []
-    for (let newLAN of newLANSet.values()) newLANs.push(newLAN.split(','))
+  for (let node of nodes) {
+    largest = Math.max(largest, getGroups(node).length)
   }
 
-  return fullLANs[0].join(',')
+  return largest
 }
 
 const main = async () => {
-  const input = (await fetchInput()).split('\n')
+  const input = (await fetchExample("input2")).split('\n')
   const inputExample = (await fetchExample()).split('\n')
 
-  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample)))
-  console.log('\nPart 1:', withTime(() => solvePart1(input)))
+  console.log('\nPart 1 (example):', withTime(() => solvePart(inputExample)))
+  // console.log('\nPart 1:', withTime(() => solvePart1(input)))
 
-  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample)))
-  console.log('\nPart 2:', withTime(() => solvePart2(input)))
+  // console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample)))
+  console.log('\nPart 2:', withTime(() => solvePart(input)))
 }
 
 main()
