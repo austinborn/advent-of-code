@@ -3,8 +3,9 @@ import { fetchExample, fetchInput, getFilledMatrix, withTime } from '../../utils
 const ROWS = 7
 const COLS = 5
 const FILLED = '#'
+const FILLED_ROW = '#####'
 
-const solvePart1 = (input: string[]) => {
+const solve = (input: string[]) => {
   const keys: string[] = []
   const locks: string[] = []
   for (let object of input) {
@@ -17,7 +18,7 @@ const solvePart1 = (input: string[]) => {
 
     const numString: string = numList.join('')
 
-    if (rows[0] == '#####') locks.push(numString)
+    if (rows[0] == FILLED_ROW) locks.push(numString)
     else keys.push(numString)
   }
 
@@ -49,11 +50,8 @@ const main = async () => {
   const input = (await fetchInput()).split('\n\n')
   const inputExample = (await fetchExample()).split('\n\n')
 
-  console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample)))
-  console.log('\nPart 1:', withTime(() => solvePart1(input)))
-
-  console.log('\nPart 2 (example):', withTime(() => solvePart2(inputExample)))
-  console.log('\nPart 2:', withTime(() => solvePart2(input)))
+  console.log('\nPart 1 (example):', withTime(() => solve(inputExample)))
+  console.log('\nPart 1:', withTime(() => solve(input)))
 }
 
 main()
