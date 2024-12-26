@@ -6,9 +6,6 @@ const ops = {
   'AND': (num1: number, num2: number) => num1 & num2
 }
 
-const boolToString = (b: boolean) => b ? "1" : "0"
-const stringToBool = (s: string) => s == "1" ? true : false
-
 const solvePart1 = (input: string[]) => {
   const [initWireParitiesStr, gatesStr] = input
 
@@ -86,7 +83,7 @@ const solvePart1 = (input: string[]) => {
     queue = [...newQueue]
   }
 
-  return parseInt(finalBinary.reverse().map(boolToString).join(''), 2)
+  return parseInt(finalBinary.reverse().map(b => b ? "1" : "0").join(''), 2)
 }
 
 const solvePart2 = (input: string[]) => {
@@ -111,10 +108,24 @@ const solvePart2 = (input: string[]) => {
     }
   } = {}
 
+   /* Steps to solve:
+   1. Start with empty swap dict
+   2. Use console.log(gateStrings) below to print out a JSON of the generated strings for each Z
+   3. Observe the JSON in order of Zs and look for areas where the pattern of previous XORs, ANDs and ORs breaks down.
+   4. Iteratively add swapped pairs until you've found all 4.
+   */
+
+  const swap = {
+    //TODO fill me in with pairs of swapped gate names
+  }
+
   let zMax = 0
 
   for (let gate of gates) {
-    const [left, op, right, , gateName] = gate.split(' ')
+    const [left, op, right, , gateNamePreswap] = gate.split(' ')
+  
+    let gateName = swap[gateNamePreswap] ?? gateNamePreswap
+
     if (gateName[0] == 'z') zMax = Math.max(zMax, parseInt(gateName.slice(1)))
 
     gateState[gateName] = { op, left, right }
@@ -125,7 +136,6 @@ const solvePart2 = (input: string[]) => {
     gatesConnectedToWire[left].leftFor.add(gateName)
     gatesConnectedToWire[right].rightFor.add(gateName)
   }
-
 
   let initialQueue: string[] = []
 
@@ -153,106 +163,46 @@ const solvePart2 = (input: string[]) => {
     else if (name[0] == 'y') finalBinaryY[parseInt(name.slice(1))] = boolState
   }
 
-  let finalDecZ = parseInt(finalBinaryX.reverse().map(boolToString).join(''),2) + parseInt(finalBinaryY.reverse().map(boolToString).join(''),2)
-
-  let finalBinaryZ = finalDecZ.toString(2).padStart(zMax + 1, '0').split('').reverse().map(stringToBool)
-
   const allGates = Object.keys(gateState).filter(g => g[0] != 'x' && g[0] != 'y')
 
-  const getStr = (gate: string) => {
+  const getStr: (gate: string) => { str: string, min: number } = (gate) => {
     const { left, right, op } = gateState[gate]
-    const base = left[0] == 'x' || left[0] == 'y'
-    return`(${base ? left : getStr(left)} ${op} ${base ? right : getStr(right)})`
+    const baseX = left[0] == 'x'
+    const baseY = left[0] == 'y'
+
+    if (baseX) return {
+      str: `(${left} ${op}<${gate}> ${right})`,
+      min: parseInt(left.slice(1))
+    }
+    else if (baseY) return {
+      str: `(${right} ${op}<${gate}> ${left})`,
+      min: parseInt(left.slice(1))
+    }
+
+    const leftStr = getStr(left)
+    const rightStr = getStr(right)
+    const str = leftStr.min < rightStr.min
+      ? `(${leftStr.str} ${op}<${gate}> ${rightStr.str})`
+      : `(${rightStr.str} ${op}<${gate}> ${leftStr.str})`
+    return { str, min: Math.min(leftStr.min, rightStr.min) }
   }
 
-  // const gateStrings = {}
-  // for (let gate of allGates) if (gate[0] == 'z') gateStrings[gate] = getStr(gate)
+  const gateStrings = {}
+  for (let gate of allGates) {
+    if (gate[0] == 'z') gateStrings[gate] = getStr(gate).str
+  }
   // console.log(gateStrings)
 
-  for               (let i = 0;     i < allGates.length - 7;  i++) {
-    for             (let j = i + 1; j < allGates.length;      j++) {
-      for           (let k = i + 1; k < allGates.length - 5;  k++) {
-        if (k == j) continue
-        for         (let l = k + 1; l < allGates.length;      l++) {
-          if (l == j) continue
-          for       (let m = k + 1; m < allGates.length - 3;  m++) {
-            if (m == j || m == l) continue
-            for     (let n = m + 1; n < allGates.length;      n++) {
-              if (n == j || n == l) continue
-              for   (let o = m + 1; o < allGates.length - 1;  o++) {
-                if (o == j || o == l || o == n) continue
-                for (let p = o + 1; p < allGates.length;      p++) {
-                  if (p == j || p == l || p == n) continue
-
-                  // console.log([i,j,k,l,m,n,o,p].join(','))
-
-                  const swap = {
-                    [allGates[i]]: allGates[j], [allGates[j]]: allGates[i],
-                    [allGates[k]]: allGates[l], [allGates[l]]: allGates[k],
-                    [allGates[m]]: allGates[n], [allGates[n]]: allGates[m],
-                    [allGates[o]]: allGates[p], [allGates[p]]: allGates[o]
-                  }
-
-                  const getGateWithSwap = (gateName: string) => swap[gateName] ?? gateName
-
-                  let matchesBinary = true
-
-                  let queue = [...initialQueue]
-
-                  while (matchesBinary && queue.length > 0) {
-                    const newQueue: string[] = []
-                    for (let gate of queue) {
-                      const thisGateState = gateState[gate]
-                      let state = ops[thisGateState.op](thisGateState.leftState, thisGateState.rightState)
-
-                      const swappedGate = getGateWithSwap(gate)
-                      const parsedIdx = parseInt(swappedGate.slice(1))
-
-                      if (swappedGate[0] == 'z' && (finalBinaryZ[parsedIdx] != state)) {
-                        matchesBinary = false
-                        // console.log("No match:", swappedGate, parsedIdx, finalBinaryZ[parsedIdx], state)
-                        break
-                      } else {
-                        for (let nextGate of gatesConnectedToWire[swappedGate].leftFor.values()) {
-                          gateState[nextGate].leftState = state
-                          if (gateState[nextGate].rightState != undefined) newQueue.push(nextGate)
-                        }
-                        for (let nextGate of gatesConnectedToWire[swappedGate].rightFor.values()) {
-                          gateState[nextGate].rightState = state
-                          if (gateState[nextGate].leftState != undefined) newQueue.push(nextGate)
-                        }
-                      }
-                    }
-                    if (!matchesBinary) break
-                    queue = [...newQueue]
-                  }
-
-                  if (matchesBinary) {
-                    return [
-                      allGates[i],allGates[j],allGates[k],allGates[l],
-                      allGates[m],allGates[n],allGates[o],allGates[p],
-                    ].sort().join(',')
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return 0
+  return Object.keys(swap).sort().join(',')
 }
 
 const main = async () => {
   const input = (await fetchInput()).split('\n\n')
   const inputExample = (await fetchExample()).split('\n\n')
-  const inputExample2 = (await fetchExample("inputExample2")).split('\n\n')
 
   console.log('\nPart 1 (example):', withTime(() => solvePart1(inputExample)))
   console.log('\nPart 1:', withTime(() => solvePart1(input)))
-  // console.log('\nPart 2:', withTime(() => solvePart2(input))) //dhb,kng,pbr,phv,qpp,vdq,wfd,z00 not right
+  console.log('\nPart 2:', withTime(() => solvePart2(input)))
 }
 
 main()
