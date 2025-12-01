@@ -2,7 +2,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.4",
     "@types/bignumber.js": "^5.0.4",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.19.1",
     "dotenv": "^16.4.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",

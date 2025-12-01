@@ -1,6 +1,6 @@
 # Advent of Code Typescript Solutions
 
-## One-Time Setup (MacOS only)
+## Yearly Setup (MacOS only)
 1. Install NPM and Typescript:
 ```
 brew install npm typescript
@@ -12,6 +12,11 @@ npm install @types/node --save-dev
 ```
 
 3. Set executable permissions on scripts in `scripts/` directory.
+
+4. Log in for the first day's input and go to the Network tab. Copy the `Cookie` header into `.env` like this:
+```
+COOKIE="_ga=...; _gid=...; session=...; _ga_...=..."
+```
 
 ## Daily Setup
 
